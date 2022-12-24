@@ -1,8 +1,10 @@
 package main;
 
+import main.программа.ГлавноеОкно;
+
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+	ГлавноеОкно го = new ГлавноеОкно();
     }
 }
