@@ -1,5 +1,7 @@
 package main.программа;
 
+import main.программа.мое_меню.МоёМеню;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,11 +13,16 @@ public class ГлавноеОкно extends Frame implements ActionListener {
     private int ширинаОкна = 500;
     private int высотаОкна = 500;
 
+    private МоёМеню моёМеню;
+
     public ГлавноеОкно() throws HeadlessException {
         установитьЗаголовокОкна(имяПрограммы);
         установитьКнопкуЗакрытияОкна();
         установитьРазмерОкна(ширинаОкна, высотаОкна);
         установитьВидимостьОкна(true);
+
+        моёМеню = new МоёМеню(this);
+        установитьМенюБар(моёМеню.получитьМенюБар());
     }
 
     @Override
@@ -41,5 +48,9 @@ public class ГлавноеОкно extends Frame implements ActionListener {
 
     private void установитьВидимостьОкна(boolean этоВидимое) {
         setVisible(этоВидимое);
+    }
+
+    public void установитьМенюБар(MenuBar мб){
+        setMenuBar(мб);
     }
 }
