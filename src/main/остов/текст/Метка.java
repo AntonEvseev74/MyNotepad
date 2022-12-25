@@ -1,4 +1,4 @@
-package main.остов.метка;
+package main.остов.текст;
 
 import java.awt.*;
 
