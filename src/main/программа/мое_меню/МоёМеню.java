@@ -5,11 +5,14 @@ import main.остов.меню.МенюБар;
 import main.остов.меню.МенюПункт;
 import main.остов.текст.Метка;
 import main.остов.файл.Файл;
+import main.остов.файл.ХудожникСтраницыФайла;
 import main.программа.ГлавноеОкно;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.*;
 
 import static main.программа.мое_меню.ИменаПунктовМеню.*;
@@ -44,18 +47,18 @@ public class МоёМеню implements ActionListener {
         this.главноеОкно = главноеОкно;
         this.файл = файл;
         менюБар = создатьМенюБар(); // Создать менюБар
-        создатьМенюФайл(менюФайл, ФАЙЛ); // Создать меню Файл
-        создатьМенюПравка(менюПравка, ПРАВКА); // Создать меню Правка
-        создатьМенюФормат(менюФормат, ФОРМАТ); // Создать меню Правка
-        создатьМенюВид(менюВид, ВИД); // Создать меню Правка
-        создатьМенюСправка(менюСправка, СПРАВКА); // Создать меню Правка
+        создатьМенюФайл(менюФайл); // Создать меню Файл
+        создатьМенюПравка(менюПравка); // Создать меню Правка
+        создатьМенюФормат(менюФормат); // Создать меню Правка
+        создатьМенюВид(менюВид); // Создать меню Правка
+        создатьМенюСправка(менюСправка); // Создать меню Правка
 
         меткаДляТекста = new Метка("", Метка.ЦЕНТР);
         главноеОкно.add(меткаДляТекста, BorderLayout.CENTER);
     }
 
-    private void создатьМенюСправка(Меню меню, String имя) {
-        меню = создатьМеню(имя);
+    private void создатьМенюСправка(Меню меню) {
+        меню = создатьМеню(ИменаПунктовМеню.СПРАВКА);
 
         справкаПросмотретьСправку = создатьПунктМеню(ПРОСМОТРЕТЬ_СПРАВКУ);
         добавитьПунктВМеню(меню, справкаПросмотретьСправку);
@@ -68,8 +71,8 @@ public class МоёМеню implements ActionListener {
         справкаОПрограмме.addActionListener(this);
     }
 
-    private void создатьМенюВид(Меню меню, String имя) {
-        меню = создатьМеню(имя);
+    private void создатьМенюВид(Меню меню) {
+        меню = создатьМеню(ИменаПунктовМеню.ВИД);
 
         видСтрокаСостояния = создатьПунктМеню(СТРОКА_СОСТОЯНИЯ); // РЕАЛИЗОВАТЬ checkbox
         добавитьПунктВМеню(меню, видСтрокаСостояния);
@@ -79,8 +82,8 @@ public class МоёМеню implements ActionListener {
         видСтрокаСостояния.addActionListener(this);
     }
 
-    private void создатьМенюФормат(Меню меню, String имя) {
-        меню = создатьМеню(имя);
+    private void создатьМенюФормат(Меню меню) {
+        меню = создатьМеню(ИменаПунктовМеню.ФОРМАТ);
 
         форматПереносПоСловам = создатьПунктМеню(ПЕРЕНОС_ПО_СЛОВАМ);
         добавитьПунктВМеню(меню, форматПереносПоСловам);
@@ -93,8 +96,8 @@ public class МоёМеню implements ActionListener {
         форматШрифт.addActionListener(this);
     }
 
-    private void создатьМенюПравка(Меню меню, String имя) {
-        меню = создатьМеню(имя);
+    private void создатьМенюПравка(Меню меню) {
+        меню = создатьМеню(ИменаПунктовМеню.ПРАВКА);
 
         правкаОтменить = создатьПунктМеню(ОТМЕНИТЬ);
         правкаВырезать = создатьПунктМеню(ВЫРЕЗАТЬ);
@@ -138,8 +141,8 @@ public class МоёМеню implements ActionListener {
         правкаВремяИДата.addActionListener(this);
     }
 
-    private void создатьМенюФайл(Меню меню, String имя) {
-        меню = создатьМеню(имя);
+    private void создатьМенюФайл(Меню меню) {
+        меню = создатьМеню(ИменаПунктовМеню.ФАЙЛ);
 
         // Создать пункты меню
         файлСоздать = создатьПунктМеню(СОЗДАТЬ);
@@ -193,9 +196,11 @@ public class МоёМеню implements ActionListener {
                 break;
             case ПАРАМЕТРЫ_СТРАНИЦЫ:
                 // не реализовано
+                открытьПараметрыСтраницыДляПечати();
                 break;
             case ПЕЧАТЬ:
-                // не реализовано
+                // !!!!! распечатывает одну страницу
+                распечататьДокумент();
                 break;
             case ВЫХОД:
                 закрытьПрограмму();
@@ -235,6 +240,25 @@ public class МоёМеню implements ActionListener {
             case ВРЕМЯ_И_ДАТА:
                 // не реализовано
                 break;
+        }
+    }
+
+    private void открытьПараметрыСтраницыДляПечати() {
+
+    }
+
+    private void распечататьДокумент() {
+        сохранитьФайл();
+        String printData = главноеОкно.получитьТекстовуюПлощадь().getText();
+        PrinterJob job = PrinterJob.getPrinterJob();
+        job.setPrintable(new ХудожникСтраницыФайла(printData));
+        boolean doPrint = job.printDialog();
+        if (doPrint) {
+            try {
+                job.print();
+            } catch (PrinterException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -283,7 +307,7 @@ public class МоёМеню implements ActionListener {
             String текст = главноеОкно.получитьТекстовуюПлощадь().getText();
 
             File ф = new File(файл.получитьПолноеИмя());
-            try (BufferedWriter буферЗаписи = new BufferedWriter(new FileWriter(ф.getAbsoluteFile()))){
+            try (BufferedWriter буферЗаписи = new BufferedWriter(new FileWriter(ф.getAbsoluteFile()))) {
                 буферЗаписи.write(текст);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -302,7 +326,7 @@ public class МоёМеню implements ActionListener {
         String текст = главноеОкно.получитьТекстовуюПлощадь().getText();
 
         File файл = new File(путь);
-        try (BufferedWriter буферЗаписи = new BufferedWriter(new FileWriter(файл.getAbsoluteFile()))){
+        try (BufferedWriter буферЗаписи = new BufferedWriter(new FileWriter(файл.getAbsoluteFile()))) {
             буферЗаписи.write(текст);
         } catch (IOException e) {
             e.printStackTrace();
